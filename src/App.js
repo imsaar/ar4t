@@ -225,15 +225,27 @@ const GridDisplay = ({ teamMembers, selectedMemberIds, onMemberHover, onMemberLe
 
 const ControlsPanel = ({ 
     teamMembers, onAddMember, onRemoveMember, onToggleIsolate, selectedMemberIds, userId,
-    allManagers, selectedManager, onManagerChange, onExportCsv, onImportCsv 
+    allManagers, selectedManager, onManagerChange, onExportCsv, onImportCsv, onEditMember
 }) => {
   const [name, setName] = useState('');
   const [performance, setPerformance] = useState(50);
   const [potential, setPotential] = useState(50);
   const [trendPerformance, setTrendPerformance] = useState(0);
   const [trendPotential, setTrendPotential] = useState(0);
-  const [manager, setManager] = useState(''); 
+  const [manager, setManager] = useState('');
+  const [editingMember, setEditingMember] = useState(null);
   const importFileRef = useRef(null);
+
+  useEffect(() => {
+    if (editingMember) {
+      setName(editingMember.name);
+      setPerformance(editingMember.performance);
+      setPotential(editingMember.potential);
+      setTrendPerformance(editingMember.trendPerformance);
+      setTrendPotential(editingMember.trendPotential);
+      setManager(editingMember.manager || '');
+    }
+  }, [editingMember]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -245,15 +257,35 @@ const ControlsPanel = ({
       setTimeout(() => modal.remove(), 3000);
       return;
     }
-    const newMember = {
-      id: `member_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name, performance: parseFloat(performance), potential: parseFloat(potential),
-      trendPerformance: parseFloat(trendPerformance), trendPotential: parseFloat(trendPotential),
-      manager: manager.trim(), color: MEMBER_COLORS[teamMembers.length % MEMBER_COLORS.length]
-    };
-    onAddMember(newMember);
-    setName(''); setPerformance(50); setPotential(50);
-    setTrendPerformance(0); setTrendPotential(0); setManager('');
+
+    if (editingMember) {
+      const updatedMember = {
+        ...editingMember,
+        name, 
+        performance: parseFloat(performance), 
+        potential: parseFloat(potential),
+        trendPerformance: parseFloat(trendPerformance), 
+        trendPotential: parseFloat(trendPotential),
+        manager: manager.trim()
+      };
+      onEditMember(updatedMember);
+      setEditingMember(null);
+    } else {
+      const newMember = {
+        id: `member_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        name, performance: parseFloat(performance), potential: parseFloat(potential),
+        trendPerformance: parseFloat(trendPerformance), trendPotential: parseFloat(trendPotential),
+        manager: manager.trim(), color: MEMBER_COLORS[teamMembers.length % MEMBER_COLORS.length]
+      };
+      onAddMember(newMember);
+    }
+    
+    setName(''); 
+    setPerformance(50); 
+    setPotential(50);
+    setTrendPerformance(0); 
+    setTrendPotential(0); 
+    setManager('');
   };
 
   const handleImportClick = () => {
@@ -278,6 +310,22 @@ const ControlsPanel = ({
       {userId && <p className="text-xs text-gray-500 mb-3">User ID: {userId}</p>}
       
       <form onSubmit={handleSubmit} className="space-y-5 mb-8 pb-8 border-b border-gray-200">
+        {editingMember && (
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-blue-700">
+                  Editing: <span className="font-medium">{editingMember.name}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         <div>
           <label htmlFor="name" className={labelClass}>Name</label>
           <input type="text" id="name" value={name} onChange={e => setName(e.target.value)} className={inputClass} required />
@@ -306,7 +354,28 @@ const ControlsPanel = ({
             <input type="number" id="trendPerformance" value={trendPerformance} onChange={e => setTrendPerformance(e.target.value)} min="-20" max="20" step="1" className={inputClass} />
           </div>
         </div>
-        <button type="submit" className={`${buttonClass} bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500`}>Add Member</button>
+        <div className="flex space-x-3">
+          <button type="submit" className={`${buttonClass} bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 flex-1`}>
+            {editingMember ? 'Save Changes' : 'Add Member'}
+          </button>
+          {editingMember && (
+            <button 
+              type="button" 
+              onClick={() => {
+                setEditingMember(null);
+                setName('');
+                setPerformance(50);
+                setPotential(50);
+                setTrendPerformance(0);
+                setTrendPotential(0);
+                setManager('');
+              }}
+              className={`${buttonClass} bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-500 flex-1`}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       <div className="mb-8">
@@ -342,7 +411,10 @@ const ControlsPanel = ({
                 <span className="text-sm font-medium text-gray-800">{member.name}</span>
                 {member.manager && <span className="text-xs text-gray-500 ml-2">({member.manager})</span>}
               </div>
-              <button onClick={() => onRemoveMember(member.id)} className="text-xs text-red-600 hover:text-red-800 font-medium hover:underline">Remove</button>
+              <div className="flex space-x-2">
+                <button onClick={() => setEditingMember(member)} className="text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline">Edit</button>
+                <button onClick={() => onRemoveMember(member.id)} className="text-xs text-red-600 hover:text-red-800 font-medium hover:underline">Remove</button>
+              </div>
             </li>
           ))}
         </ul>
@@ -396,6 +468,14 @@ function App() {
   const handleMemberHover = useCallback((m, pos) => { if (!draggingMemberId) { setHoveredMember(m); setTooltipPosition(pos); }}, [draggingMemberId]);
   const handleMemberLeave = useCallback(() => { setHoveredMember(null); setTooltipPosition(null); }, []);
   const handleManagerChange = (e) => setSelectedManager(e.target.value);
+  const handleEditMember = useCallback((member) => {
+    const updated = teamMembers.map(m => 
+      m.id === member.id ? member : m
+    );
+    setTeamMembers(updated);
+    saveDataLocally(updated);
+  }, [teamMembers, saveDataLocally]);
+
   const handleMemberMouseDown = useCallback((id, e) => { e.preventDefault(); setDraggingMemberId(id); setHoveredMember(null); }, []);
 
   useEffect(() => {
@@ -487,7 +567,7 @@ function App() {
             teamMembers={teamMembersForList} onAddMember={handleAddMember} onRemoveMember={handleRemoveMember}
             onToggleIsolate={handleToggleIsolate} selectedMemberIds={selectedMemberIds} userId={userId}
             allManagers={allManagers} selectedManager={selectedManager} onManagerChange={handleManagerChange}
-            onExportCsv={handleExportCsv} onImportCsv={handleImportCsv}
+            onExportCsv={handleExportCsv} onImportCsv={handleImportCsv} onEditMember={handleEditMember}
           />
         </div>
         <div className="lg:col-span-2">
