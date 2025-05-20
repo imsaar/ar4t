@@ -121,13 +121,11 @@ function csvToTeamMembers(csvString) {
 const Tooltip = ({ member, position }) => {
   if (!member || !position) return null;
   const style = {
-    position: 'absolute', left: `${position.x + 10}px`, top: `${position.y + 10}px`,
-    backgroundColor: 'white', border: '1px solid #ccc', borderRadius: '8px',
-    padding: '8px 12px', zIndex: 1000, boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    fontSize: '12px', pointerEvents: 'none', 
+    left: `${position.x + 10}px`, 
+    top: `${position.y + 10}px`
   };
   return (
-    <div style={style}>
+    <div className="tooltip" style={style}>
       <strong style={{ color: member.color, display: 'block', marginBottom: '4px' }}>{member.name}</strong>
       <div>Pot: {member.potential.toFixed(0)}, Perf: {member.performance.toFixed(0)}</div>
       <div>Trend Pot: {member.trendPotential.toFixed(0)}, Trend Perf: {member.trendPerformance.toFixed(0)}</div>
@@ -172,7 +170,7 @@ const MemberVisualization = ({ member, isIsolated, onMouseEnter, onMouseLeave, o
 const GridDisplay = ({ teamMembers, selectedMemberIds, onMemberHover, onMemberLeave, svgRefForward, onMemberMouseDown, draggingMemberId }) => {
   const anyMemberSelected = selectedMemberIds.length > 0;
   return (
-    <div className="relative w-full aspect-square max-w-2xl mx-auto shadow-lg rounded-lg border border-gray-200 bg-white select-none">
+    <div className="relative w-full aspect-square max-w-2xl mx-auto shadow-lg rounded-lg border border-gray-200 bg-white select-none grid-display-container">
       <svg ref={svgRefForward} viewBox={`0 0 ${GRID_SIZE} ${GRID_SIZE}`} className="w-full h-full">
         <defs>
           <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -275,7 +273,7 @@ const ControlsPanel = ({
 
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg shadow">
+    <div className="p-6 bg-gray-50 rounded-lg shadow controls-panel">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Manage Team Members</h2>
       {userId && <p className="text-xs text-gray-500 mb-3">User ID: {userId}</p>}
       
@@ -332,7 +330,7 @@ const ControlsPanel = ({
       {teamMembers.length === 0 ? (
         <p className="text-sm text-gray-500">No team members added yet.</p>
       ) : (
-        <ul className="space-y-2 max-h-60 overflow-y-auto pr-2">
+        <ul className="space-y-2 max-h-60 overflow-y-auto pr-2 team-list">
           {teamMembers.map(member => (
             <li key={member.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200">
               <div className="flex items-center">
@@ -478,7 +476,7 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans grid-container">
       <header className="mb-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-indigo-700">Four Box Assessment Tool</h1>
         <p className="text-md text-gray-600 mt-1">Visualize Team Potential & Performance</p>

@@ -1,38 +1,148 @@
-.App {
-  text-align: center;
+/* Main grid container */
+.grid-container {
+  display: grid;
+  gap: 1.5rem;
 }
 
-.App-logo {
-  height: 40vmin;
+/* Grid display area */
+.grid-display-container {
+  position: relative;
+  min-height: 500px;
+}
+
+/* Controls panel */
+.controls-panel {
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+/* Form styling */
+.controls-panel form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.controls-panel .input-group {
+  margin-bottom: 1rem;
+}
+
+.controls-panel input[type="text"],
+.controls-panel input[type="number"],
+.controls-panel select {
+  transition: all 0.2s ease;
+  border: 1px solid #d1d5db;
+}
+
+.controls-panel input[type="text"]:focus,
+.controls-panel input[type="number"]:focus,
+.controls-panel select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.controls-panel button {
+  transition: all 0.2s ease;
+}
+
+.controls-panel button:hover {
+  transform: translateY(-1px);
+}
+
+.controls-panel button:active {
+  transform: translateY(0);
+}
+
+/* Section headers */
+.controls-panel h2 {
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.controls-panel h3 {
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Team list items */
+.controls-panel .team-list li {
+  transition: all 0.2s ease;
+}
+
+.controls-panel .team-list li:hover {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+/* Team member list */
+.team-list {
+  max-height: 300px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.team-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.team-list::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.team-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 3px;
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   pointer-events: none;
+  max-width: 250px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .controls-panel {
+    max-height: none;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Animation for member dots */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
-.App-link {
-  color: #61dafb;
+.member-dot {
+  animation: pulse 2s infinite;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.member-dot:hover {
+  animation: none;
+  transform: scale(1.2);
 }
