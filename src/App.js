@@ -267,17 +267,17 @@ const ControlsPanel = ({
     }
   };
 
-  const inputClass = "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
-  const labelClass = "block text-sm font-medium text-gray-700";
-  const buttonClass = "w-full px-4 py-2 font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const inputClass = "mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1";
+  const buttonClass = "w-full px-4 py-2 font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-150";
 
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg shadow controls-panel">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Manage Team Members</h2>
+    <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200 controls-panel">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">Manage Team Members</h2>
       {userId && <p className="text-xs text-gray-500 mb-3">User ID: {userId}</p>}
       
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6 pb-6 border-b border-gray-200">
+      <form onSubmit={handleSubmit} className="space-y-5 mb-8 pb-8 border-b border-gray-200">
         <div>
           <label htmlFor="name" className={labelClass}>Name</label>
           <input type="text" id="name" value={name} onChange={e => setName(e.target.value)} className={inputClass} required />
@@ -309,7 +309,7 @@ const ControlsPanel = ({
         <button type="submit" className={`${buttonClass} bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500`}>Add Member</button>
       </form>
 
-      <div className="mb-6">
+      <div className="mb-8">
         <label htmlFor="managerFilter" className={labelClass}>Filter by Manager</label>
         <select id="managerFilter" value={selectedManager} onChange={onManagerChange} className={`${inputClass} mt-1`}>
           <option value="ALL_MANAGERS">All Managers</option>
@@ -318,31 +318,31 @@ const ControlsPanel = ({
       </div>
 
       {/* CSV Export/Import Section */}
-      <div className="space-y-3 my-6 py-6 border-y border-gray-200">
-        <h3 className="text-md font-medium text-gray-700">Data Management</h3>
+      <div className="space-y-4 my-8 py-8 border-y border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Data Management</h3>
         <button onClick={onExportCsv} className={`${buttonClass} bg-green-600 text-white hover:bg-green-700 focus:ring-green-500`}>Export to CSV</button>
         <input type="file" accept=".csv" onChange={handleFileImport} ref={importFileRef} className="hidden" />
         <button onClick={handleImportClick} className={`${buttonClass} bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500`}>Import from CSV (Replaces Data)</button>
       </div>
 
 
-      <h3 className="text-lg font-medium text-gray-700 mb-3">Team List</h3>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Team Members</h3>
       {teamMembers.length === 0 ? (
         <p className="text-sm text-gray-500">No team members added yet.</p>
       ) : (
-        <ul className="space-y-2 max-h-60 overflow-y-auto pr-2 team-list">
+        <ul className="space-y-3 max-h-72 overflow-y-auto pr-2 team-list">
           {teamMembers.map(member => (
-            <li key={member.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm border border-gray-200">
+            <li key={member.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-100 transition-colors duration-150">
               <div className="flex items-center">
                 <input type="checkbox" id={`isolate-${member.id}`} checked={selectedMemberIds.includes(member.id)}
                   onChange={() => onToggleIsolate(member.id)}
                   className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-3"
                 />
                 <span style={{ width: '12px', height: '12px', backgroundColor: member.color, borderRadius: '50%', marginRight: '8px', display: 'inline-block' }}></span>
-                <span className="text-sm text-gray-800">{member.name}</span>
+                <span className="text-sm font-medium text-gray-800">{member.name}</span>
                 {member.manager && <span className="text-xs text-gray-500 ml-2">({member.manager})</span>}
               </div>
-              <button onClick={() => onRemoveMember(member.id)} className="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+              <button onClick={() => onRemoveMember(member.id)} className="text-xs text-red-600 hover:text-red-800 font-medium hover:underline">Remove</button>
             </li>
           ))}
         </ul>
