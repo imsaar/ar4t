@@ -18,10 +18,10 @@ const MEMBER_COLORS = [
 ];
 
 const QUADRANT_DEFINITIONS = [
-  { name: "Future Stars", xRange: [0, 50], yRange: [50, 100], fill: 'rgba(15, 157, 88, 0.05)' }, 
-  { name: "Leading Stars", xRange: [50, 100], yRange: [50, 100], fill: 'rgba(66, 133, 244, 0.05)' }, 
+  { name: "High Performers", xRange: [0, 50], yRange: [50, 100], fill: 'rgba(15, 157, 88, 0.05)' }, 
+  { name: "Rock Stars", xRange: [50, 100], yRange: [50, 100], fill: 'rgba(66, 133, 244, 0.05)' }, 
   { name: "Needs Development", xRange: [0, 50], yRange: [0, 50], fill: 'rgba(219, 68, 55, 0.05)' }, 
-  { name: "Core Contributors", xRange: [50, 100], yRange: [0, 50], fill: 'rgba(244, 180, 0, 0.05)' }, 
+  { name: "Strong Potential", xRange: [50, 100], yRange: [0, 50], fill: 'rgba(244, 180, 0, 0.05)' }, 
 ];
 
 const mapToSvgCoords = (potential, performance) => {
@@ -307,7 +307,6 @@ const ControlsPanel = ({
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg border border-gray-200 controls-panel">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">Manage Team Members</h2>
-      {userId && <p className="text-xs text-gray-500 mb-3">User ID: {userId}</p>}
       
       <form onSubmit={handleSubmit} className="space-y-5 mb-8 pb-8 border-b border-gray-200">
         {editingMember && (
