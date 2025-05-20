@@ -1,18 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, setLogLevel } from 'firebase/firestore';
-
-// --- Firebase Configuration ---
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-    apiKey: "YOUR_FALLBACK_API_KEY", 
-    authDomain: "YOUR_FALLBACK_AUTH_DOMAIN",
-    projectId: "YOUR_FALLBACK_PROJECT_ID",
-    storageBucket: "YOUR_FALLBACK_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_FALLBACK_MESSAGING_SENDER_ID",
-    appId: "YOUR_FALLBACK_APP_ID"
-};
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+// Local storage key for team data
+const LOCAL_STORAGE_KEY = 'fourBoxTeamData';
+const appId = 'local-app-id';
 
 // --- Helper Functions & Constants ---
 const GRID_SIZE = 500; 
@@ -370,65 +359,40 @@ function App() {
   const [hoveredMember, setHoveredMember] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState(null);
   const [selectedManager, setSelectedManager] = useState("ALL_MANAGERS");
-  const [db, setDb] = useState(null);
-  const [auth, setAuth] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userId] = useState('local-user-id');
+  const [isAuthReady] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [draggingMemberId, setDraggingMemberId] = useState(null);
   const svgGridRef = useRef(null);
 
+  // Load initial data from localStorage
   useEffect(() => {
-    try {
-        const app = initializeApp(firebaseConfig);
-        const firestoreDb = getFirestore(app); const firebaseAuth = getAuth(app);
-        setDb(firestoreDb); setAuth(firebaseAuth); setLogLevel('debug'); 
-        const unsub = onAuthStateChanged(firebaseAuth, async (user) => {
-            if (user) setUserId(user.uid); 
-            else if (typeof __initial_auth_token === 'undefined' || !__initial_auth_token)
-                await signInAnonymously(firebaseAuth).catch(e=>console.error("Anon sign-in fail",e));
-            setIsAuthReady(true); 
-        });
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            signInWithCustomToken(firebaseAuth, __initial_auth_token)
-                .catch((e) => { console.error("Custom token sign-in fail", e);
-                    if (!firebaseAuth.currentUser) signInAnonymously(firebaseAuth).catch(e2=>console.error("Anon fail after custom fail",e2));
-                });
-        } else if (!firebaseAuth.currentUser) signInAnonymously(firebaseAuth).catch(e=>console.error("Initial anon fail",e));
-        else { setUserId(firebaseAuth.currentUser.uid); setIsAuthReady(true); }
-        return () => unsub();
-    } catch (e) { console.error("FB init error", e); setIsAuthReady(true); setIsLoading(false); }
+    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedData) {
+      try {
+        setTeamMembers(JSON.parse(savedData));
+      } catch (e) {
+        console.error("Error parsing saved data", e);
+      }
+    }
   }, []);
 
-  const docRef = useMemo(() => {
-    if (db && userId && appId && isAuthReady) return doc(db, `artifacts/${appId}/users/${userId}/fourBoxAssessments/teamData`);
-    return null;
-  }, [db, userId, appId, isAuthReady]);
-
-  useEffect(() => {
-    if (!isAuthReady || !docRef) { setIsLoading(false); return; }
-    setIsLoading(true);
-    const unsub = onSnapshot(docRef, (snap) => {
-      setTeamMembers(snap.exists() ? (snap.data().teamMembers || []) : []);
-      setIsLoading(false);
-    }, (e) => { console.error("FS fetch error", e); setIsLoading(false); });
-    return () => unsub();
-  }, [docRef, isAuthReady]);
-
-  const saveDataToFirestore = useCallback(async (updatedTeamMembers) => {
-    if (!docRef) { console.warn("Cannot save: FS doc ref not available."); return; }
-    try { await setDoc(docRef, { teamMembers: updatedTeamMembers }, { merge: true }); }
-    catch (e) { console.error("FS save error", e); }
-  }, [docRef]);
+  const saveDataLocally = useCallback((updatedTeamMembers) => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTeamMembers));
+    } catch (e) {
+      console.error("Error saving to localStorage", e);
+    }
+  }, []);
 
   const handleAddMember = (newMember) => {
     const updated = [...teamMembers, newMember];
-    setTeamMembers(updated); saveDataToFirestore(updated);
+    setTeamMembers(updated); saveDataLocally(updated);
   };
   const handleRemoveMember = (memberId) => {
     const updated = teamMembers.filter(m => m.id !== memberId);
-    setTeamMembers(updated); setSelectedMemberIds(p => p.filter(id => id !== memberId)); 
-    saveDataToFirestore(updated);
+    setTeamMembers(updated); setSelectedMemberIds(p => p.filter(id => id !== memberId));
+    saveDataLocally(updated);
   };
   const handleToggleIsolate = (memberId) => setSelectedMemberIds(p => p.includes(memberId) ? p.filter(id => id !== memberId) : [...p, memberId]);
   const handleMemberHover = useCallback((m, pos) => { if (!draggingMemberId) { setHoveredMember(m); setTooltipPosition(pos); }}, [draggingMemberId]);
@@ -447,7 +411,7 @@ function App() {
     };
     const up = () => {
       if (draggingMemberId) {
-        setTeamMembers(curr => { saveDataToFirestore(curr); return curr; });
+        setTeamMembers(curr => { saveDataLocally(curr); return curr; });
         setDraggingMemberId(null);
       }
     };
@@ -459,7 +423,7 @@ function App() {
       document.body.style.cursor = 'default';
       window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up);
     };
-  }, [draggingMemberId, saveDataToFirestore]);
+  }, [draggingMemberId, saveDataLocally]);
 
   const handleExportCsv = () => {
     const csvData = teamMembersToCsv(teamMembers);
@@ -486,7 +450,7 @@ function App() {
         const importedMembers = csvToTeamMembers(csvString);
         if (importedMembers) { // Check if parsing was successful
             setTeamMembers(importedMembers);
-            saveDataToFirestore(importedMembers);
+            saveDataLocally(importedMembers);
             // Show success message
             const successModal = document.createElement('div');
             successModal.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:green; color:white; padding:10px 20px; border-radius:5px; z-index:1002;';
@@ -512,16 +476,6 @@ function App() {
   const filteredTeamMembersForGrid = useMemo(() => selectedManager === "ALL_MANAGERS" ? teamMembers : teamMembers.filter(m => m.manager === selectedManager), [teamMembers, selectedManager]);
   const teamMembersForList = teamMembers;
 
-  if (!isAuthReady || isLoading) {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="p-6 bg-white rounded-lg shadow-md">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                <p className="text-center text-gray-700">Loading Assessment Tool...</p>
-            </div>
-        </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
@@ -554,4 +508,3 @@ function App() {
 }
 
 export default App;
-
