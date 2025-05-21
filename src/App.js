@@ -7,6 +7,7 @@ const appId = 'local-app-id';
 const GRID_SIZE = 500; 
 const AXIS_MARGIN = 50;
 const PLOT_AREA_SIZE = GRID_SIZE - 2 * AXIS_MARGIN;
+const MIN_VALUE = 50;
 const MAX_VALUE = 100; 
 const TREND_SCALE_FACTOR = 1.5; 
 
@@ -18,23 +19,23 @@ const MEMBER_COLORS = [
 ];
 
 const QUADRANT_DEFINITIONS = [
-  { name: "High Performers", xRange: [0, 50], yRange: [50, 100], fill: 'rgba(15, 157, 88, 0.05)' }, 
-  { name: "Rock Stars", xRange: [50, 100], yRange: [50, 100], fill: 'rgba(66, 133, 244, 0.05)' }, 
-  { name: "Needs Development", xRange: [0, 50], yRange: [0, 50], fill: 'rgba(219, 68, 55, 0.05)' }, 
-  { name: "Strong Potential", xRange: [50, 100], yRange: [0, 50], fill: 'rgba(244, 180, 0, 0.05)' }, 
+  { name: "High Performers", xRange: [50, 75], yRange: [75, 100], fill: 'rgba(15, 157, 88, 0.05)' }, 
+  { name: "Rock Stars", xRange: [75, 100], yRange: [75, 100], fill: 'rgba(66, 133, 244, 0.05)' }, 
+  { name: "Needs Development", xRange: [50, 75], yRange: [50, 75], fill: 'rgba(219, 68, 55, 0.05)' }, 
+  { name: "Strong Potential", xRange: [75, 100], yRange: [50, 75], fill: 'rgba(244, 180, 0, 0.05)' }, 
 ];
 
 const mapToSvgCoords = (potential, performance) => {
-  const x = AXIS_MARGIN + (potential / MAX_VALUE) * PLOT_AREA_SIZE; 
-  const y = AXIS_MARGIN + ((MAX_VALUE - performance) / MAX_VALUE) * PLOT_AREA_SIZE; 
+  const x = AXIS_MARGIN + ((potential - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE; 
+  const y = AXIS_MARGIN + ((MAX_VALUE - performance) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE; 
   return { x, y };
 };
 
 const mapSvgToScores = (svgX, svgY) => {
-  let potential = ((svgX - AXIS_MARGIN) / PLOT_AREA_SIZE) * MAX_VALUE;
-  let performance = MAX_VALUE - (((svgY - AXIS_MARGIN) / PLOT_AREA_SIZE) * MAX_VALUE);
-  potential = Math.max(0, Math.min(MAX_VALUE, potential));
-  performance = Math.max(0, Math.min(MAX_VALUE, performance));
+  let potential = MIN_VALUE + ((svgX - AXIS_MARGIN) / PLOT_AREA_SIZE) * (MAX_VALUE - MIN_VALUE);
+  let performance = MIN_VALUE + ((MAX_VALUE - MIN_VALUE) - (((svgY - AXIS_MARGIN) / PLOT_AREA_SIZE) * (MAX_VALUE - MIN_VALUE)));
+  potential = Math.max(MIN_VALUE, Math.min(MAX_VALUE, potential));
+  performance = Math.max(MIN_VALUE, Math.min(MAX_VALUE, performance));
   return { potential, performance };
 };
 
@@ -178,10 +179,10 @@ const GridDisplay = ({ teamMembers, selectedMemberIds, onMemberHover, onMemberLe
           </marker>
         </defs>
         {QUADRANT_DEFINITIONS.map(q => {
-          const qXStart = AXIS_MARGIN + (q.xRange[0] / MAX_VALUE) * PLOT_AREA_SIZE;
-          const qYStart = AXIS_MARGIN + ((MAX_VALUE - q.yRange[1]) / MAX_VALUE) * PLOT_AREA_SIZE;
-          const qWidth = ((q.xRange[1] - q.xRange[0]) / MAX_VALUE) * PLOT_AREA_SIZE;
-          const qHeight = ((q.yRange[1] - q.yRange[0]) / MAX_VALUE) * PLOT_AREA_SIZE;
+          const qXStart = AXIS_MARGIN + ((q.xRange[0] - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
+          const qYStart = AXIS_MARGIN + ((MAX_VALUE - q.yRange[1]) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
+          const qWidth = ((q.xRange[1] - q.xRange[0]) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
+          const qHeight = ((q.yRange[1] - q.yRange[0]) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
           const midX = qXStart + qWidth / 2; const midY = qYStart + qHeight / 2;
           return (
             <g key={q.name}>
@@ -199,9 +200,9 @@ const GridDisplay = ({ teamMembers, selectedMemberIds, onMemberHover, onMemberLe
         <line x1={AXIS_MARGIN} y1={AXIS_MARGIN + PLOT_AREA_SIZE / 2} x2={GRID_SIZE - AXIS_MARGIN} y2={AXIS_MARGIN + PLOT_AREA_SIZE / 2} stroke="#aaa" strokeWidth="1.25" strokeDasharray="4,4" />
         <text x={GRID_SIZE / 2} y={GRID_SIZE - AXIS_MARGIN / 2.5} textAnchor="middle" fontSize="14" fill="#333" className="font-medium">Potential →</text>
         <text x={AXIS_MARGIN / 2.5} y={GRID_SIZE / 2} textAnchor="middle" transform={`rotate(-90, ${AXIS_MARGIN / 2.5}, ${GRID_SIZE / 2})`} fontSize="14" fill="#333" className="font-medium">Performance →</text>
-        {[0, 25, 50, 75, 100].map(val => {
-            const xTick = AXIS_MARGIN + (val / MAX_VALUE) * PLOT_AREA_SIZE;
-            const yTick = AXIS_MARGIN + ((MAX_VALUE - val) / MAX_VALUE) * PLOT_AREA_SIZE;
+        {[50, 62.5, 75, 87.5, 100].map(val => {
+            const xTick = AXIS_MARGIN + ((val - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
+            const yTick = AXIS_MARGIN + ((MAX_VALUE - val) / (MAX_VALUE - MIN_VALUE)) * PLOT_AREA_SIZE;
             return (
                 <g key={`tick-${val}`}>
                     <line x1={xTick} y1={GRID_SIZE - AXIS_MARGIN} x2={xTick} y2={GRID_SIZE - AXIS_MARGIN + 5} stroke="#999" strokeWidth="1" />
@@ -228,8 +229,8 @@ const ControlsPanel = ({
     allManagers, selectedManager, onManagerChange, onExportCsv, onImportCsv, onEditMember
 }) => {
   const [name, setName] = useState('');
-  const [performance, setPerformance] = useState(50);
-  const [potential, setPotential] = useState(50);
+  const [performance, setPerformance] = useState(75);
+  const [potential, setPotential] = useState(75);
   const [trendPerformance, setTrendPerformance] = useState(0);
   const [trendPotential, setTrendPotential] = useState(0);
   const [manager, setManager] = useState('');
@@ -281,8 +282,8 @@ const ControlsPanel = ({
     }
     
     setName(''); 
-    setPerformance(50); 
-    setPotential(50);
+    setPerformance(75); 
+    setPotential(75);
     setTrendPerformance(0); 
     setTrendPotential(0); 
     setManager('');
@@ -335,12 +336,12 @@ const ControlsPanel = ({
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="potential" className={labelClass}>Potential (0-100)</label>
-            <input type="number" id="potential" value={potential} onChange={e => setPotential(e.target.value)} min="0" max="100" step="1" className={inputClass} />
+            <label htmlFor="potential" className={labelClass}>Potential (50-100)</label>
+            <input type="number" id="potential" value={potential} onChange={e => setPotential(e.target.value)} min="50" max="100" step="1" className={inputClass} />
           </div>
           <div>
-            <label htmlFor="performance" className={labelClass}>Performance (0-100)</label>
-            <input type="number" id="performance" value={performance} onChange={e => setPerformance(e.target.value)} min="0" max="100" step="1" className={inputClass} />
+            <label htmlFor="performance" className={labelClass}>Performance (50-100)</label>
+            <input type="number" id="performance" value={performance} onChange={e => setPerformance(e.target.value)} min="50" max="100" step="1" className={inputClass} />
           </div>
         </div>
          <div className="grid grid-cols-2 gap-4">
@@ -363,8 +364,8 @@ const ControlsPanel = ({
               onClick={() => {
                 setEditingMember(null);
                 setName('');
-                setPerformance(50);
-                setPotential(50);
+                setPerformance(75);
+                setPotential(75);
                 setTrendPerformance(0);
                 setTrendPotential(0);
                 setManager('');
