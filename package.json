@@ -1,5 +1,5 @@
 {
-  "name": "four-box-tool",
+  "name": "ar-4box-tool",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -43,7 +43,7 @@
     "postcss": "8.4.38",
     "tailwindcss": "3.4.3"
   },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "Four Box Assessment Tool to Visualize Team Potential & Performance",
   "main": "index.js",
   "keywords": [],
   "author": "",
