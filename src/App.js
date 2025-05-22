@@ -19,10 +19,10 @@ const MEMBER_COLORS = [
 ];
 
 const QUADRANT_DEFINITIONS = [
-  { name: "Quadrant II", xRange: [50, 100], yRange: [100, 150], fill: 'rgba(15, 157, 88, 0.05)' }, 
-  { name: "Quadrant I", xRange: [100, 150], yRange: [100, 150], fill: 'rgba(66, 133, 244, 0.05)' }, 
-  { name: "Quadrant III", xRange: [50, 100], yRange: [50, 100], fill: 'rgba(219, 68, 55, 0.05)' }, 
-  { name: "Quadrant IV", xRange: [100, 150], yRange: [50, 100], fill: 'rgba(244, 180, 0, 0.05)' }, 
+  { name: "", xRange: [50, 100], yRange: [100, 150], fill: 'rgba(15, 157, 88, 0.05)' }, 
+  { name: "", xRange: [100, 150], yRange: [100, 150], fill: 'rgba(66, 133, 244, 0.05)' }, 
+  { name: "", xRange: [50, 100], yRange: [50, 100], fill: 'rgba(219, 68, 55, 0.05)' }, 
+  { name: "", xRange: [100, 150], yRange: [50, 100], fill: 'rgba(244, 180, 0, 0.05)' }, 
 ];
 
 const mapToSvgCoords = (potential, performance) => {
