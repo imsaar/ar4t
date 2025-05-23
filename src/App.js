@@ -55,9 +55,21 @@ function escapeCsvValue(value) {
 
 function teamMembersToCsv(members) {
     const headerRow = CSV_HEADERS.join(',');
-    const dataRows = members.map(member => 
-        CSV_HEADERS.map(header => escapeCsvValue(member[header])).join(',')
-    );
+    const dataRows = members.map(member => {
+        // Create a copy with rounded values
+        const memberForExport = {...member};
+        
+        // Round potential and performance to 2 decimal places
+        if (typeof memberForExport.potential === 'number') {
+            memberForExport.potential = parseFloat(memberForExport.potential.toFixed(2));
+        }
+        
+        if (typeof memberForExport.performance === 'number') {
+            memberForExport.performance = parseFloat(memberForExport.performance.toFixed(2));
+        }
+        
+        return CSV_HEADERS.map(header => escapeCsvValue(memberForExport[header])).join(',');
+    });
     return [headerRow, ...dataRows].join('\n');
 }
 
@@ -94,7 +106,10 @@ function csvToTeamMembers(csvString) {
                     value = value.substring(1, value.length - 1).replace(/""/g, '"');
                 }
 
-                if (['potential', 'performance', 'trendPotential', 'trendPerformance'].includes(header)) {
+                if (['potential', 'performance'].includes(header)) {
+                    // Round potential and performance to 2 decimal places
+                    memberData[header] = parseFloat((parseFloat(value) || 0).toFixed(2));
+                } else if (['trendPotential', 'trendPerformance'].includes(header)) {
                     memberData[header] = parseFloat(value) || 0;
                 } else {
                     memberData[header] = value;
@@ -104,7 +119,13 @@ function csvToTeamMembers(csvString) {
         // Ensure all required fields are present, even if empty in CSV
         CSV_HEADERS.forEach(requiredHeader => {
             if (!(requiredHeader in memberData)) {
-                memberData[requiredHeader] = (['potential', 'performance', 'trendPotential', 'trendPerformance'].includes(requiredHeader)) ? 0 : '';
+                if (['potential', 'performance'].includes(requiredHeader)) {
+                    memberData[requiredHeader] = 0.00; // Ensure default is properly rounded
+                } else if (['trendPotential', 'trendPerformance'].includes(requiredHeader)) {
+                    memberData[requiredHeader] = 0;
+                } else {
+                    memberData[requiredHeader] = '';
+                }
             }
         });
 
@@ -128,7 +149,7 @@ const Tooltip = ({ member, position }) => {
   return (
     <div className="tooltip" style={style}>
       <strong style={{ color: member.color, display: 'block', marginBottom: '4px' }}>{member.name}</strong>
-      <div>Pot: {member.potential.toFixed(0)}, Perf: {member.performance.toFixed(0)}</div>
+      <div>Pot: {member.potential.toFixed(2)}, Perf: {member.performance.toFixed(2)}</div>
       <div>Trend Pot: {member.trendPotential.toFixed(0)}, Trend Perf: {member.trendPerformance.toFixed(0)}</div>
       {member.manager && <div>Mgr: {member.manager}</div>}
     </div>
@@ -263,8 +284,9 @@ const ControlsPanel = ({
       const updatedMember = {
         ...editingMember,
         name, 
-        performance: parseFloat(performance), 
-        potential: parseFloat(potential),
+        // Round performance and potential to 2 decimal places
+        performance: parseFloat(parseFloat(performance).toFixed(2)),
+        potential: parseFloat(parseFloat(potential).toFixed(2)),
         trendPerformance: parseFloat(trendPerformance), 
         trendPotential: parseFloat(trendPotential),
         manager: manager.trim()
@@ -274,9 +296,14 @@ const ControlsPanel = ({
     } else {
       const newMember = {
         id: `member_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        name, performance: parseFloat(performance), potential: parseFloat(potential),
-        trendPerformance: parseFloat(trendPerformance), trendPotential: parseFloat(trendPotential),
-        manager: manager.trim(), color: MEMBER_COLORS[teamMembers.length % MEMBER_COLORS.length]
+        name, 
+        // Round performance and potential to 2 decimal places
+        performance: parseFloat(parseFloat(performance).toFixed(2)),
+        potential: parseFloat(parseFloat(potential).toFixed(2)),
+        trendPerformance: parseFloat(trendPerformance), 
+        trendPotential: parseFloat(trendPotential),
+        manager: manager.trim(), 
+        color: MEMBER_COLORS[teamMembers.length % MEMBER_COLORS.length]
       };
       onAddMember(newMember);
     }
@@ -485,7 +512,10 @@ function App() {
       let pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
       pt = pt.matrixTransform(CTM.inverse());
       const { potential, performance } = mapSvgToScores(pt.x, pt.y);
-      setTeamMembers(prev => prev.map(m => m.id === draggingMemberId ? { ...m, potential, performance } : m));
+      // Round potential and performance to 2 decimal places
+      const roundedPotential = parseFloat(potential.toFixed(2));
+      const roundedPerformance = parseFloat(performance.toFixed(2));
+      setTeamMembers(prev => prev.map(m => m.id === draggingMemberId ? { ...m, potential: roundedPotential, performance: roundedPerformance } : m));
     };
     const up = () => {
       if (draggingMemberId) {
