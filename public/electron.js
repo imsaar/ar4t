@@ -15,8 +15,8 @@ function createWindow() {
       enableRemoteModule: false
     },
     icon: process.platform === 'darwin' 
-      ? path.join(__dirname, '4box.icns')
-      : path.join(__dirname, 'favicon.ico'),
+      ? path.join(__dirname, 'icons/mac/icon.icns')
+      : path.join(__dirname, 'icons/win/icon.ico'),
     show: false,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
   });
