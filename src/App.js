@@ -40,7 +40,7 @@ const mapSvgToScores = (svgX, svgY) => {
 };
 
 // --- CSV Helper Functions ---
-const CSV_HEADERS = ['id', 'name', 'potential', 'performance', 'trendPotential', 'trendPerformance', 'manager', 'color'];
+const CSV_HEADERS = ['name', 'potential', 'performance', 'trendPotential', 'trendPerformance', 'manager'];
 
 function escapeCsvValue(value) {
     if (value === null || typeof value === 'undefined') return '';
@@ -129,8 +129,9 @@ function csvToTeamMembers(csvString) {
             }
         });
 
-        if (!memberData.id) memberData.id = `imported_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        if (!memberData.color) memberData.color = MEMBER_COLORS[members.length % MEMBER_COLORS.length];
+        // Always auto-assign id and color for imports
+        memberData.id = `imported_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        memberData.color = MEMBER_COLORS[members.length % MEMBER_COLORS.length];
         
         members.push(memberData);
     }
@@ -364,21 +365,21 @@ const ControlsPanel = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="potential" className={labelClass}>Potential (50-150)</label>
-            <input type="number" id="potential" value={potential} onChange={e => setPotential(e.target.value)} min="50" max="150" step="1" className={inputClass} />
+            <input type="number" id="potential" value={potential} onChange={e => setPotential(e.target.value)} min="50" max="150" step="0.01" className={inputClass} />
           </div>
           <div>
             <label htmlFor="performance" className={labelClass}>Performance (50-150)</label>
-            <input type="number" id="performance" value={performance} onChange={e => setPerformance(e.target.value)} min="50" max="150" step="1" className={inputClass} />
+            <input type="number" id="performance" value={performance} onChange={e => setPerformance(e.target.value)} min="50" max="150" step="0.01" className={inputClass} />
           </div>
         </div>
          <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="trendPotential" className={labelClass}>Trend Pot. (-20 to +20)</label>
-            <input type="number" id="trendPotential" value={trendPotential} onChange={e => setTrendPotential(e.target.value)} min="-20" max="20" step="1" className={inputClass} />
+            <input type="number" id="trendPotential" value={trendPotential} onChange={e => setTrendPotential(e.target.value)} min="-20" max="20" step="0.01" className={inputClass} />
           </div>
           <div>
             <label htmlFor="trendPerformance" className={labelClass}>Trend Perf. (-20 to +20)</label>
-            <input type="number" id="trendPerformance" value={trendPerformance} onChange={e => setTrendPerformance(e.target.value)} min="-20" max="20" step="1" className={inputClass} />
+            <input type="number" id="trendPerformance" value={trendPerformance} onChange={e => setTrendPerformance(e.target.value)} min="-20" max="20" step="0.01" className={inputClass} />
           </div>
         </div>
         <div className="flex space-x-3">
