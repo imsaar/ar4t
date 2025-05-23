@@ -17,7 +17,13 @@
     "start": "NODE_OPTIONS='--no-deprecation' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-dev": "ELECTRON_IS_DEV=true electron .",
+    "electron-build": "npm run build && electron-builder",
+    "build-win": "npm run build && electron-builder --win",
+    "build-mac": "npm run build && electron-builder --mac",
+    "build-all": "npm run build && electron-builder --mac --win"
   },
   "eslintConfig": {
     "extends": [
@@ -40,12 +46,55 @@
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.7",
     "autoprefixer": "10.4.17",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12",
+    "electron-is-dev": "^3.0.1",
+    "fs-extra": "^11.3.0",
     "postcss": "8.4.38",
     "tailwindcss": "3.4.3"
   },
   "description": "Four Box Assessment Tool to Visualize Team Potential & Performance",
-  "main": "index.js",
+  "main": "public/electron.js",
+  "homepage": "./",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "build": {
+    "appId": "com.fourbox.assessment-tool",
+    "productName": "Four Box Assessment Tool",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.business",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }
