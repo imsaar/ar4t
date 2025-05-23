@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 // Local storage key for team data
 const LOCAL_STORAGE_KEY = 'fourBoxTeamData';
-const appId = 'local-app-id';
 
 // --- Helper Functions & Constants ---
 const GRID_SIZE = 500; 
@@ -457,9 +456,6 @@ function App() {
   const [hoveredMember, setHoveredMember] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState(null);
   const [selectedManager, setSelectedManager] = useState("ALL_MANAGERS");
-  const [userId] = useState('local-user-id');
-  const [isAuthReady] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [draggingMemberId, setDraggingMemberId] = useState(null);
   const svgGridRef = useRef(null);
 
@@ -596,7 +592,7 @@ function App() {
         <div className="lg:col-span-1">
           <ControlsPanel
             teamMembers={teamMembersForList} onAddMember={handleAddMember} onRemoveMember={handleRemoveMember}
-            onToggleIsolate={handleToggleIsolate} selectedMemberIds={selectedMemberIds} userId={userId}
+            onToggleIsolate={handleToggleIsolate} selectedMemberIds={selectedMemberIds} 
             allManagers={allManagers} selectedManager={selectedManager} onManagerChange={handleManagerChange}
             onExportCsv={handleExportCsv} onImportCsv={handleImportCsv} onEditMember={handleEditMember}
           />
