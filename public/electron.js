@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development' || process.env.ELECTRON_IS_
 function createWindow() {
   // Create the browser window
   const mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 1400,
     height: 800,
     webPreferences: {
       nodeIntegration: false,
