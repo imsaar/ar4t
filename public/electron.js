@@ -13,7 +13,9 @@ function createWindow() {
       contextIsolation: true,
       enableRemoteModule: false
     },
-    icon: path.join(__dirname, 'public/favicon.ico'),
+    icon: process.platform === 'darwin' 
+      ? path.join(__dirname, 'public/4box.icns')
+      : path.join(__dirname, 'public/favicon.ico'),
     show: false,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'
   });

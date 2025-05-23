@@ -60,8 +60,8 @@
   "author": "",
   "license": "ISC",
   "build": {
-    "appId": "com.fourbox.assessment-tool",
-    "productName": "Four Box Assessment Tool",
+    "appId": "com.saarcology.ar4t",
+    "productName": "AR4BoxTool",
     "directories": {
       "buildResources": "build"
     },
