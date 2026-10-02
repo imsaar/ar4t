@@ -1,0 +1,64 @@
+CLAUDE.md
+  s_ea20de4ff4b0aa::t_567c6be1ba9af6 1-6,8-10,14,20-36
+  s_d5e49eb4f5b2b8::t_c33fc1df4bc6c8 15-19
+  s_d5e49eb4f5b2b8::t_c778cccbfed906 11-13
+  s_d5e49eb4f5b2b8::t_982f7f33967ad5 7
+public/electron.js
+  s_d5e49eb4f5b2b8::t_ac6b476af53279 1-26
+.gitignore
+  s_d5e49eb4f5b2b8::t_11bafc1b12bb45 13
+pnpm-workspace.yaml
+  s_d5e49eb4f5b2b8::t_96cfc6742d8be9 1-2
+  s_d5e49eb4f5b2b8::t_2c8b855714c714 8
+  s_d5e49eb4f5b2b8::t_94c5d8ce05ed78 3,9
+  s_d5e49eb4f5b2b8::t_e45156b0cf14f8 4-7,10
+package.json
+  s_d5e49eb4f5b2b8::t_9568219698b957 7
+  s_d5e49eb4f5b2b8::t_d83623ef497496 6
+  s_d5e49eb4f5b2b8::t_ef4241e048abfc 55
+  s_d5e49eb4f5b2b8::t_9f6567b4bb7771 25-27
+  s_d5e49eb4f5b2b8::t_a3b8b03a2f07e5 61-63,66,68-78,91-92
+  s_d5e49eb4f5b2b8::t_f2225037907b94 5
+  s_d5e49eb4f5b2b8::t_02331dc74563ff 79-82,90
+  s_d5e49eb4f5b2b8::t_8c62052bfa5810 83-89
+  s_d5e49eb4f5b2b8::t_559d738fe05469 67
+  s_d5e49eb4f5b2b8::t_653a5e17da1548 65
+  s_d5e49eb4f5b2b8::t_7e043571f0db6b 23-24
+  s_d5e49eb4f5b2b8::t_2f82000e409017 3
+  s_d5e49eb4f5b2b8::t_ecd04c8c824971 50-52,54,56
+  s_d5e49eb4f5b2b8::t_8258f0d15c2cbb 64
+.tool-versions
+  s_d5e49eb4f5b2b8::t_f220b360e998f0 1
+README.md
+  s_d5e49eb4f5b2b8::t_9f12783478ab71 8,14,20,27,30
+  s_d5e49eb4f5b2b8::t_ac2721f95646ac 34-48,53
+  s_d5e49eb4f5b2b8::t_3fa854326e6a85 7
+pnpm-lock.yaml
+  s_d5e49eb4f5b2b8::t_1de4af915c7c20 1-14897
+asterix_story_log.json
+  s_d5e49eb4f5b2b8::t_634792e48c3bc2 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "c128cce58dac235ad6a22c03a8e853509998287c",
+  "prompts": {},
+  "sessions": {
+    "s_d5e49eb4f5b2b8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "579a1a47-cae8-4bd6-8199-7b0350ab5f01",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ali Rizvi <arizvi@avvo.com>"
+    },
+    "s_ea20de4ff4b0aa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f808d878-2087-4f73-9748-9cf37c1c2a27",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ali Rizvi <arizvi@avvo.com>"
+    }
+  }
+}
