@@ -1,0 +1,10 @@
+publicHoistPattern:
+  - '*eslint*'
+allowBuilds:
+  '@firebase/util': false
+  '@tailwindcss/oxide': false
+  core-js: false
+  core-js-pure: false
+  electron: true
+  electron-winstaller: true
+  protobufjs: false
