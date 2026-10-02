@@ -1,7 +1,10 @@
 {
   "name": "ar-4box-tool",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "homepage": "./",
+  "main": "public/electron.js",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -17,7 +20,11 @@
     "start": "NODE_OPTIONS='--no-deprecation' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron:dev": "concurrently -k \"BROWSER=none pnpm start\" \"wait-on http://localhost:3000 && ELECTRON_START_URL=http://localhost:3000 electron .\"",
+    "electron:pack": "pnpm run build && electron-builder --mac --dir",
+    "electron:dist": "pnpm run build && electron-builder --mac",
+    "electron:dist:win": "pnpm run build && electron-builder --win"
   },
   "eslintConfig": {
     "extends": [
@@ -40,12 +47,47 @@
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.7",
     "autoprefixer": "10.4.17",
+    "concurrently": "^10.0.5",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
     "postcss": "8.4.38",
-    "tailwindcss": "3.4.3"
+    "tailwindcss": "3.4.3",
+    "typescript": "~5.3.3",
+    "wait-on": "^9.5.1"
   },
   "description": "Four Box Assessment Tool to Visualize Team Potential & Performance",
-  "main": "index.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "build": {
+    "appId": "com.ar4t.fourboxtool",
+    "productName": "4 Box Tool",
+    "artifactName": "AR4BoxTool-${version}.${ext}",
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build-resources/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "public/logo512.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    }
+  }
 }
